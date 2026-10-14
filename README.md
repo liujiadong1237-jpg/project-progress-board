@@ -86,7 +86,19 @@ node scripts/sync-from-github.mjs
 
 ### GitHub Actions 自动同步
 
-工作流：[`.github/workflows/sync-board.yml`](.github/workflows/sync-board.yml)
+工作流模板：[scripts/sync-board.workflow.yml](scripts/sync-board.workflow.yml)
+
+当前 `gh` OAuth 令牌缺少 `workflow` 权限，无法直接推送 `.github/workflows/`。启用方式（任选其一）：
+
+1. **网页**：仓库 → Actions → 新建 workflow → 粘贴 `scripts/sync-board.workflow.yml` 内容，保存为 `sync-board.yml`
+2. **CLI**（需先 `gh auth refresh -s workflow`）：
+   ```bash
+   mkdir -p .github/workflows
+   cp scripts/sync-board.workflow.yml .github/workflows/sync-board.yml
+   git add .github/workflows/sync-board.yml && git commit -m "ci: add sync workflow" && git push
+   ```
+
+启用后：
 
 - **定时**：每天 UTC 02:00（约北京时间 10:00）
 - **手动**：Actions 页 →「Sync board.json from GitHub」→ Run workflow
