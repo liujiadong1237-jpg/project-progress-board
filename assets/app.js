@@ -38,7 +38,87 @@
     return formatCNY(card.invested);
   }
 
+  function checklistItems(card) {
+    var raw =
+      card.checklist ||
+      card.subtasks ||
+      card.tasks ||
+      card.checks ||
+      null;
+    return Array.isArray(raw) ? raw : null;
+  }
+
+  function isChecklistDone(item) {
+    if (item == null) return false;
+    if (typeof item === "boolean") return item;
+    if (typeof item === "string") {
+      var s = item.trim().toLowerCase();
+      return s.indexOf("[x]") === 0 || s === "done" || s === "完成" || s === "已完成";
+    }
+    if (typeof item !== "object") return false;
+    if (item.done === true || item.completed === true || item.checked === true) return true;
+    var st = String(item.status || item.state || "").toLowerCase();
+    return (
+      st === "done" ||
+      st === "completed" ||
+      st === "closed" ||
+      st === "完成" ||
+      st === "已完成"
+    );
+  }
+
+  /** Auto progress: checklist first, else elapsed/total days; else null. */
+  function computeAutoProgress(card) {
+    var items = checklistItems(card);
+    if (items && items.length) {
+      var done = 0;
+      items.forEach(function (it) {
+        if (isChecklistDone(it)) done += 1;
+      });
+      return {
+        pct: Math.round((done / items.length) * 100),
+        source: "checklist",
+        detail: done + "/" + items.length,
+      };
+    }
+
+    var start = parseDate(card.startDate);
+    var end = parseDate(card.deadline);
+    if (start && end && end > start) {
+      var today = new Date();
+      // normalize to local noon-ish via date-only strings already parsed
+      var elapsed = daysBetween(start, today);
+      var total = daysBetween(start, end);
+      var ratio = elapsed / total;
+      if (ratio < 0) ratio = 0;
+      if (ratio > 1) ratio = 1;
+      return {
+        pct: Math.round(ratio * 100),
+        source: "schedule",
+        detail: null,
+      };
+    }
+
+    return { pct: null, source: null, detail: null };
+  }
+
+  function effectiveProgress(card) {
+    var auto = computeAutoProgress(card);
+    if (auto.pct != null) return auto;
+    if (card.progress != null && card.progress !== "") {
+      return { pct: Number(card.progress), source: "manual", detail: null };
+    }
+    return { pct: null, source: null, detail: null };
+  }
+
   function formatProgress(card) {
+    var auto = computeAutoProgress(card);
+    if (auto.pct != null) {
+      if (auto.source === "checklist") {
+        return auto.pct + "%（检查项 " + auto.detail + "）";
+      }
+      return auto.pct + "%（按日程）";
+    }
     if (card.status === "待核验" && (card.progress == null || card.progress === "")) {
       return "待核验";
     }
@@ -48,7 +128,7 @@
       }
       return "待核验";
     }
-    return card.progress + "%";
+    return card.progress + "%（手填遗留）";
   }
 
   function parseDate(s) {
@@ -176,7 +256,8 @@
   }
 
   function renderCard(card) {
-    var pct = card.progress;
+    var eff = effectiveProgress(card);
+    var pct = eff.pct;
     var cardEl = document.createElement("div");
     cardEl.className = "card" + (card.status === "待核验" ? " pending" : "");
     cardEl.style.background = progressColor(pct);
@@ -231,9 +312,7 @@
       "</span></div>" +
       '<div class="triple-row"><span class="k">进度</span><span class="v">' +
       escapeHtml(formatProgress(card)) +
-      (card.progress != null && card.progress !== ""
-        ? " · " + escapeHtml(card.stage || "")
-        : "") +
+      (eff.pct != null ? " · " + escapeHtml(card.stage || "") : "") +
       "</span></div>" +
       '<div class="triple-row next"><span class="k">下一步</span><span class="v">' +
       escapeHtml(card.nextAction || "（待补具体动作）") +
@@ -267,15 +346,19 @@
       var colEl = document.createElement("div");
       colEl.className = "kanban-col";
       var cards = col.cards || [];
-      var known = cards.filter(function (c) {
-        return c.progress != null && c.progress !== "";
-      });
+      var known = cards
+        .map(function (c) {
+          return effectiveProgress(c);
+        })
+        .filter(function (e) {
+          return e.pct != null;
+        });
       var avg =
         known.length === 0
           ? null
           : Math.round(
-              known.reduce(function (s, c) {
-                return s + Number(c.progress);
+              known.reduce(function (s, e) {
+                return s + Number(e.pct);
               }, 0) / known.length
             );
 
@@ -342,13 +425,14 @@
       var e = parseDate(p.deadline) || rangeEnd;
       var left = Math.max(0, (daysBetween(rangeStart, s) / totalDays) * 100);
       var width = Math.max(1.5, (daysBetween(s, e) / totalDays) * 100);
-      var color = progressColorSoft(p.progress);
+      var gEff = effectiveProgress(p);
+      var color = progressColorSoft(gEff.pct);
       var label =
-        p.progress == null || p.progress === ""
+        gEff.pct == null
           ? p.status === "待核验"
             ? "待核"
             : "—"
-          : p.progress + "%";
+          : gEff.pct + "%";
       rows +=
         "<tr>" +
         '<td class="gantt-name" title="' +
