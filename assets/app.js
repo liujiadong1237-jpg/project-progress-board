@@ -82,11 +82,19 @@
       };
     }
 
+    // Million-plan / manual cards: never treat calendar span as completion.
+    if (
+      card.autoScheduleProgress === false ||
+      card.progressMode === "manual" ||
+      card.id === "million-baseline"
+    ) {
+      return { pct: null, source: null, detail: null };
+    }
+
     var start = parseDate(card.startDate);
     var end = parseDate(card.deadline);
     if (start && end && end > start) {
       var today = new Date();
-      // normalize to local noon-ish via date-only strings already parsed
       var elapsed = daysBetween(start, today);
       var total = daysBetween(start, end);
       var ratio = elapsed / total;
@@ -429,7 +437,10 @@
       var color = progressColorSoft(gEff.pct);
       var label =
         gEff.pct == null
-          ? p.status === "待核验"
+          ? p.autoScheduleProgress === false ||
+            p.progressMode === "manual" ||
+            p.status === "待核验" ||
+            p.id === "million-baseline"
             ? "待核"
             : "—"
           : gEff.pct + "%";

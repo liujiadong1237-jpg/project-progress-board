@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-14T04:31:30.600Z",
+  "updatedAt": "2026-10-14T04:49:09.803Z",
   "asOf": "2026-10-07",
   "source": "sync",
   "sourceRepos": [
@@ -398,19 +398,21 @@
           "progress": null,
           "status": "待核验",
           "legacyMilestonePct": 8,
-          "deadline": "2027-06-30",
+          "deadline": "2031-06-30",
           "startDate": "2026-01-01",
           "invested": null,
-          "investedNote": "资金基线待完整核验；不显示虚假净资产完成率",
+          "investedNote": "五年百万方向：进度只反映基线核验与资产推进，不按日历占比。资金基线待完整核验；不显示虚假净资产完成率。",
           "nextAction": "对照资金快照，列出同日现金/债务/未来30天必付项核对清单（不编完成率）",
-          "note": "决策页确认百万方向；旧8%仅为历史里程碑非净资产完成率。资产负债与经营实收看 D-门店业务/极简收入台账（现行台账）。",
+          "note": "五年计划尽量推进，不用日程完成率。进度应由用户/Codex按实际推进更新（资金核验完成度、可动用资产增长等）。旧8%仅为历史里程碑。资产负债与经营实收看 D-门店业务/极简收入台账（现行台账）。",
           "github": {
             "openIssues": 0,
             "closedIssues": 0,
             "commits": 0,
             "branches": []
           },
-          "sourceEntry": "A-计划目标/百万计划-现行决策页-20260922.md"
+          "sourceEntry": "A-计划目标/百万计划-现行决策页-20260922.md",
+          "autoScheduleProgress": false,
+          "progressMode": "manual"
         }
       ]
     }
