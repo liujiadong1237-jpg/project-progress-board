@@ -1,0 +1,58 @@
+{
+  "title": "项目进度看板",
+  "defaultSourceRepo": "liujiadong1237-jpg/personal-evolution-system",
+  "sourceRepos": [
+    "liujiadong1237-jpg/personal-evolution-system"
+  ],
+  "moneyShortfallThreshold": 0,
+  "projects": [
+    {
+      "id": "xiuxiu",
+      "name": "修修会修",
+      "githubLabels": ["修修会修", "xiuxiu"],
+      "branchHints": ["xiuxiu", "修修"]
+    },
+    {
+      "id": "old-account",
+      "name": "老号运营",
+      "githubLabels": ["老号运营", "old-account"],
+      "branchHints": ["old-account", "老号"]
+    },
+    {
+      "id": "store-ops",
+      "name": "经营与发展/店务",
+      "githubLabels": ["店务", "经营", "store"],
+      "branchHints": ["store", "店务"]
+    },
+    {
+      "id": "cashier",
+      "name": "收银软件",
+      "githubLabels": ["收银", "cashier"],
+      "branchHints": ["cashier", "收银"]
+    },
+    {
+      "id": "ai-matchstick",
+      "name": "AI火柴人",
+      "githubLabels": ["火柴人", "ai-matchstick"],
+      "branchHints": ["matchstick", "火柴人"]
+    },
+    {
+      "id": "health-learn",
+      "name": "健康与学习",
+      "githubLabels": ["健康", "学习", "health"],
+      "branchHints": ["health", "learn"]
+    },
+    {
+      "id": "family",
+      "name": "家庭事务",
+      "githubLabels": ["家庭", "family"],
+      "branchHints": ["family", "家庭"]
+    },
+    {
+      "id": "million-plan",
+      "name": "百万计划资金",
+      "githubLabels": ["百万计划", "资金"],
+      "branchHints": ["million", "资金"]
+    }
+  ]
+}

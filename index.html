@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="可视化项目进度看板：看板 + 甘特 + 余额面板" />
+  <title>项目进度看板 · Project Progress Board</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>📊 项目进度看板</h1>
+    <div class="header-meta" id="header-meta">
+      <span class="badge">加载中…</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <main class="main">
+      <div id="status" class="status-msg">正在加载 data/board.json …</div>
+
+      <div class="section-title">看板（列 = 项目）</div>
+      <div class="kanban" id="kanban" aria-label="项目看板"></div>
+
+      <div class="section-title">甘特时间线</div>
+      <div id="gantt" aria-label="甘特图"></div>
+    </main>
+
+    <aside class="sidebar" aria-label="资金余额">
+      <h2>
+        资金余额
+        <span class="example-tag">示例数据</span>
+      </h2>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">
+        以下金额为演示用 EXAMPLE，非真实账本。短缺 = 预算 − 余额，或余额 &lt; 0。
+      </p>
+      <div class="money-total" id="money-total"></div>
+      <div id="money-list"></div>
+      <div class="shortfall-list" id="shortfall-list"></div>
+    </aside>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

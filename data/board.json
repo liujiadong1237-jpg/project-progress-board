@@ -1,0 +1,198 @@
+{
+  "updatedAt": "2026-10-14T04:19:51.914Z",
+  "source": "sync",
+  "sourceRepos": [
+    "liujiadong1237-jpg/personal-evolution-system"
+  ],
+  "projects": [
+    {
+      "id": "xiuxiu",
+      "name": "修修会修",
+      "progress": 30,
+      "stage": "内容获客",
+      "deadline": "2026-11-15",
+      "startDate": "2026-09-01",
+      "github": {
+        "openIssues": 0,
+        "closedIssues": 0,
+        "commits": 0,
+        "branches": []
+      },
+      "note": "新账号"
+    },
+    {
+      "id": "old-account",
+      "name": "老号运营",
+      "progress": 40,
+      "stage": "直播获客",
+      "deadline": "2026-12-01",
+      "startDate": "2026-08-15",
+      "github": {
+        "openIssues": 0,
+        "closedIssues": 0,
+        "commits": 0,
+        "branches": []
+      },
+      "note": ""
+    },
+    {
+      "id": "store-ops",
+      "name": "经营与发展/店务",
+      "progress": 50,
+      "stage": "日常运营",
+      "deadline": "2026-12-31",
+      "startDate": "2026-07-01",
+      "github": {
+        "openIssues": 0,
+        "closedIssues": 0,
+        "commits": 0,
+        "branches": []
+      },
+      "note": ""
+    },
+    {
+      "id": "cashier",
+      "name": "收银软件",
+      "progress": 60,
+      "stage": "本地测试验收",
+      "deadline": "2026-11-30",
+      "startDate": "2026-06-01",
+      "github": {
+        "openIssues": 0,
+        "closedIssues": 0,
+        "commits": 0,
+        "branches": []
+      },
+      "note": ""
+    },
+    {
+      "id": "ai-matchstick",
+      "name": "AI火柴人",
+      "progress": 25,
+      "stage": "原型探索",
+      "deadline": "2026-12-15",
+      "startDate": "2026-09-15",
+      "github": {
+        "openIssues": 0,
+        "closedIssues": 0,
+        "commits": 0,
+        "branches": []
+      },
+      "note": ""
+    },
+    {
+      "id": "health-learn",
+      "name": "健康与学习",
+      "progress": 20,
+      "stage": "习惯养成",
+      "deadline": "2026-12-31",
+      "startDate": "2026-08-01",
+      "github": {
+        "openIssues": 0,
+        "closedIssues": 0,
+        "commits": 0,
+        "branches": []
+      },
+      "note": ""
+    },
+    {
+      "id": "family",
+      "name": "家庭事务",
+      "progress": 10,
+      "stage": "事务梳理",
+      "deadline": "2026-11-30",
+      "startDate": "2026-09-01",
+      "github": {
+        "openIssues": 0,
+        "closedIssues": 0,
+        "commits": 0,
+        "branches": []
+      },
+      "note": ""
+    },
+    {
+      "id": "million-plan",
+      "name": "百万计划资金",
+      "progress": 15,
+      "stage": "资金规划",
+      "deadline": "2027-06-30",
+      "startDate": "2026-01-01",
+      "github": {
+        "openIssues": 0,
+        "closedIssues": 0,
+        "commits": 0,
+        "branches": []
+      },
+      "note": "示例数据 — 非真实账本"
+    }
+  ],
+  "money": [
+    {
+      "projectId": "xiuxiu",
+      "name": "修修会修",
+      "balance": 3200,
+      "budget": 8000,
+      "note": "示例数据 — 投放预算余量"
+    },
+    {
+      "projectId": "old-account",
+      "name": "老号运营",
+      "balance": 5600,
+      "budget": 5000,
+      "note": "示例数据 — 直播与物料"
+    },
+    {
+      "projectId": "store-ops",
+      "name": "经营与发展/店务",
+      "balance": 12000,
+      "budget": 15000,
+      "note": "示例数据 — 店务周转"
+    },
+    {
+      "projectId": "cashier",
+      "name": "收银软件",
+      "balance": 1800,
+      "budget": 4000,
+      "note": "示例数据 — 开发与测试"
+    },
+    {
+      "projectId": "ai-matchstick",
+      "name": "AI火柴人",
+      "balance": -500,
+      "budget": 3000,
+      "note": "示例数据 — 已超支，需补款"
+    },
+    {
+      "projectId": "health-learn",
+      "name": "健康与学习",
+      "balance": 900,
+      "budget": 2000,
+      "note": "示例数据 — 课程与装备"
+    },
+    {
+      "projectId": "family",
+      "name": "家庭事务",
+      "balance": 4500,
+      "budget": 6000,
+      "note": "示例数据 — 家庭开支预留"
+    },
+    {
+      "projectId": "million-plan",
+      "name": "百万计划资金",
+      "balance": 28000,
+      "budget": 100000,
+      "note": "示例数据 — 安全垫不足"
+    }
+  ],
+  "githubMeta": {
+    "defaultRepo": "liujiadong1237-jpg/personal-evolution-system",
+    "lastSync": "2026-10-14T04:19:51.921Z",
+    "issuesTotal": 0,
+    "openIssues": 0,
+    "closedIssues": 0,
+    "commitsRecent": 4,
+    "branches": [
+      "main"
+    ]
+  }
+}
