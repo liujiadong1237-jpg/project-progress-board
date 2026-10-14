@@ -1,198 +1,587 @@
 {
-  "updatedAt": "2026-10-14T04:19:51.914Z",
+  "updatedAt": "2026-10-14T04:31:30.600Z",
+  "asOf": "2026-10-07",
   "source": "sync",
   "sourceRepos": [
-    "liujiadong1237-jpg/personal-evolution-system"
+    "liujiadong1237-jpg/personal-evolution-system",
+    "liujiadong1237-jpg/astra-news-ops"
   ],
-  "projects": [
+  "sourceNotes": [
+    "项目工作台/可见目标与进度看板-20260922.md（2026-10-07 全项目进度快照）",
+    "项目工作台/03-经营与发展/子项目/资金安排/资金快照-20260922.md（2026-10-07 手头2100）",
+    "D-门店业务/极简收入台账.md（2026-09-09 债务快照）",
+    "A-计划目标/百万计划-现行决策页-20260922.md"
+  ],
+  "columns": [
     {
-      "id": "xiuxiu",
-      "name": "修修会修",
-      "progress": 30,
-      "stage": "内容获客",
-      "deadline": "2026-11-15",
-      "startDate": "2026-09-01",
-      "github": {
-        "openIssues": 0,
-        "closedIssues": 0,
-        "commits": 0,
-        "branches": []
-      },
-      "note": "新账号"
-    },
-    {
-      "id": "old-account",
-      "name": "老号运营",
-      "progress": 40,
-      "stage": "直播获客",
-      "deadline": "2026-12-01",
-      "startDate": "2026-08-15",
-      "github": {
-        "openIssues": 0,
-        "closedIssues": 0,
-        "commits": 0,
-        "branches": []
-      },
-      "note": ""
-    },
-    {
-      "id": "store-ops",
-      "name": "经营与发展/店务",
-      "progress": 50,
-      "stage": "日常运营",
-      "deadline": "2026-12-31",
-      "startDate": "2026-07-01",
-      "github": {
-        "openIssues": 0,
-        "closedIssues": 0,
-        "commits": 0,
-        "branches": []
-      },
-      "note": ""
-    },
-    {
-      "id": "cashier",
-      "name": "收银软件",
-      "progress": 60,
-      "stage": "本地测试验收",
-      "deadline": "2026-11-30",
-      "startDate": "2026-06-01",
-      "github": {
-        "openIssues": 0,
-        "closedIssues": 0,
-        "commits": 0,
-        "branches": []
-      },
-      "note": ""
-    },
-    {
-      "id": "ai-matchstick",
-      "name": "AI火柴人",
-      "progress": 25,
-      "stage": "原型探索",
-      "deadline": "2026-12-15",
-      "startDate": "2026-09-15",
-      "github": {
-        "openIssues": 0,
-        "closedIssues": 0,
-        "commits": 0,
-        "branches": []
-      },
-      "note": ""
+      "id": "shoe-acq",
+      "name": "修鞋获客闭环",
+      "cards": [
+        {
+          "id": "xiuxiu",
+          "name": "修修会修（新号）",
+          "stage": "内容获客/寄修验证",
+          "progress": 35,
+          "status": null,
+          "deadline": "2026-11-15",
+          "startDate": "2026-09-01",
+          "invested": null,
+          "investedNote": "主库无分账号投入金额",
+          "nextAction": "核 LV 口播是否已发布并回填数据；有施工窗口则按 Gucci 脚本先拍无法补拍画面",
+          "note": "3条已发+选题推进；目标客户付费订单待核。来源：可见目标看板 2026-10-07",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "当前执行",
+          "bizStatus": "当前执行",
+          "sourceEntry": "项目工作台/01-修修会修/"
+        },
+        {
+          "id": "old-live",
+          "name": "老号直播",
+          "stage": "直播获客验证",
+          "progress": 25,
+          "status": null,
+          "deadline": "2026-12-01",
+          "startDate": "2026-09-01",
+          "invested": null,
+          "investedNote": "主库无分账号投入金额",
+          "nextAction": "核最近一次真实直播日期与客资结果；有空档则排一场可承受直播并记来源→咨询",
+          "note": "9/10 有历史客资成交，持续性待验证。来源：可见目标看板 2026-10-07",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "当前执行",
+          "bizStatus": "当前执行",
+          "sourceEntry": "项目工作台/02-老号运营/子项目/直播与咨询跟进/"
+        },
+        {
+          "id": "old-sv",
+          "name": "老号短视频",
+          "stage": "内容制作与发布核对",
+          "progress": 30,
+          "status": null,
+          "deadline": "2026-12-01",
+          "startDate": "2026-08-15",
+          "invested": null,
+          "investedNote": "主库无分账号投入金额",
+          "nextAction": "从可访问成片/草稿收尾一项并发布，回填发布证据与咨询",
+          "note": "AJ11/科比8 等有剪辑记录，实际发布待核。来源：可见目标看板 2026-10-07",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "当前执行",
+          "bizStatus": "当前执行",
+          "sourceEntry": "项目工作台/02-老号运营/子项目/选题素材与视频制作/"
+        },
+        {
+          "id": "home-leisure",
+          "name": "主页休闲账号",
+          "stage": "待核现状",
+          "progress": null,
+          "status": "待核验",
+          "deadline": null,
+          "startDate": null,
+          "invested": null,
+          "investedNote": "主库缺投入记录",
+          "nextAction": "打开主页休闲账号后台，记下最近一条发布时间与状态，回填本卡",
+          "note": "用户要求独立卡片；主库缺最新运营证据；主库缺最新运营证据，标商业候选待核，不新造工作台卡。",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "商业候选",
+          "bizStatus": "商业候选"
+        },
+        {
+          "id": "home-sv-a",
+          "name": "主页短视频账号A",
+          "stage": "待核现状",
+          "progress": null,
+          "status": "待核验",
+          "deadline": null,
+          "startDate": null,
+          "invested": null,
+          "investedNote": "主库缺投入记录",
+          "nextAction": "核账号A最近发布与数据截图，回填进度与下一步",
+          "note": "用户要求独立卡片；主库缺最新运营证据；主库缺最新运营证据，标商业候选待核，不新造工作台卡。",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "商业候选",
+          "bizStatus": "商业候选"
+        },
+        {
+          "id": "home-sv-b",
+          "name": "主页短视频账号B",
+          "stage": "待核现状",
+          "progress": null,
+          "status": "待核验",
+          "deadline": null,
+          "startDate": null,
+          "invested": null,
+          "investedNote": "主库缺投入记录",
+          "nextAction": "核账号B最近发布与数据截图，回填进度与下一步",
+          "note": "用户要求独立卡片；主库缺最新运营证据；主库缺最新运营证据，标商业候选待核，不新造工作台卡。",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "商业候选",
+          "bizStatus": "商业候选"
+        }
+      ]
     },
     {
       "id": "health-learn",
-      "name": "健康与学习",
-      "progress": 20,
-      "stage": "习惯养成",
-      "deadline": "2026-12-31",
-      "startDate": "2026-08-01",
-      "github": {
-        "openIssues": 0,
-        "closedIssues": 0,
-        "commits": 0,
-        "branches": []
-      },
-      "note": ""
+      "name": "健康与学习（06）",
+      "cards": [
+        {
+          "id": "health-learn-main",
+          "name": "健康与学习基线",
+          "stage": "习惯养成/基线待核",
+          "progress": 20,
+          "status": "待核验",
+          "deadline": "2026-12-31",
+          "startDate": "2026-08-01",
+          "invested": null,
+          "investedNote": "暂无分项投入记录",
+          "nextAction": "从当前课程/作品选1个概念，口头解释并写3行笔记；健康按当日精力安排",
+          "note": "训练/饮食/作息基线待核。来源：可见目标看板 2026-10-07",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "sourceEntry": "项目工作台/06-健康与学习/子项目/学习与思考/"
+        },
+        {
+          "id": "koubo-software",
+          "name": "口播软件学习",
+          "stage": "学习启动",
+          "progress": 5,
+          "status": "待核验",
+          "deadline": "2026-12-31",
+          "startDate": "2026-10-14",
+          "invested": null,
+          "investedNote": "暂无分项投入记录",
+          "nextAction": "今天听口播软件第1课：讲解/停顿/讲述位置，并写3条笔记",
+          "note": "个人能力训练（06）。商业变现状态只在03资讯/获客卡，不双写。",
+          "relatedCardIds": [
+            "astra-news"
+          ],
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "sourceEntry": "项目工作台/06-健康与学习/"
+        },
+        {
+          "id": "gape-house",
+          "name": "Gape House 学英语",
+          "stage": "学习启动",
+          "progress": 5,
+          "status": "待核验",
+          "deadline": "2026-12-31",
+          "startDate": "2026-10-14",
+          "invested": null,
+          "investedNote": "暂无分项投入记录",
+          "nextAction": "用 Gape House 智能体练 20 分钟英语，记下今天学会的3个表达",
+          "note": "个人学习（06）。能否卖课/动画只在03「英语动画售卖」卡。",
+          "relatedCardIds": [
+            "english-anim-sell"
+          ],
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "sourceEntry": "项目工作台/06-健康与学习/"
+        }
+      ]
+    },
+    {
+      "id": "store-ops",
+      "name": "店务与经营（03）",
+      "cards": [
+        {
+          "id": "store-daily",
+          "name": "日常店务交付",
+          "stage": "日常运营",
+          "progress": 50,
+          "status": null,
+          "deadline": "2026-12-31",
+          "startDate": "2026-07-01",
+          "invested": null,
+          "investedNote": "店务成本在经营台账，无单独「投入」字段",
+          "nextAction": "确认 AJ6 是否已送达，结果回写在店盘点",
+          "note": "10-07：用户确认 AJ6 已完工待送；送达结果待反馈",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "当前执行",
+          "bizStatus": "当前执行",
+          "sourceEntry": "项目工作台/03-经营与发展/子项目/店铺工作与夫妻分工/在店鞋盘点-20260924"
+        }
+      ]
+    },
+    {
+      "id": "biz-validate",
+      "name": "经营商业验证（03）",
+      "cards": [
+        {
+          "id": "english-anim-sell",
+          "name": "英语动画售卖 / 闲鱼英语课",
+          "stage": "商业候选",
+          "progress": 5,
+          "status": "待核验",
+          "deadline": "2026-12-31",
+          "startDate": "2026-10-14",
+          "invested": null,
+          "investedNote": "暂无分项投入记录",
+          "nextAction": "列出1条英语动画选题大纲（30秒内），并查闲鱼同类课标价区间",
+          "note": "经营侧商业验证（03）；学习进度只在06「Gape House」卡，不双写。",
+          "relatedCardIds": [
+            "gape-house"
+          ],
+          "tag": "商业候选",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "bizStatus": "商业候选",
+          "sourceEntry": "项目工作台/03-经营与发展/子项目/副业想法与可行性评估/"
+        },
+        {
+          "id": "astra-news",
+          "name": "四平台资讯→变现",
+          "stage": "当前执行",
+          "progress": 20,
+          "status": null,
+          "deadline": "2026-12-31",
+          "startDate": "2026-10-01",
+          "invested": null,
+          "investedNote": "暂无分项投入记录",
+          "nextAction": "跑一轮 Reddit/Discord/Perplexity/Twitter 采集，整理1条小红书或闲鱼草稿",
+          "note": "Bot Astra 资讯已建。仓库 https://github.com/liujiadong1237-jpg/astra-news-ops",
+          "link": "https://github.com/liujiadong1237-jpg/astra-news-ops",
+          "tag": "当前执行",
+          "relatedCardIds": [
+            "koubo-software"
+          ],
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "bizStatus": "当前执行",
+          "sourceEntry": "https://github.com/liujiadong1237-jpg/astra-news-ops"
+        }
+      ]
+    },
+    {
+      "id": "cashier",
+      "name": "收银软件（03）",
+      "cards": [
+        {
+          "id": "cashier-dev",
+          "name": "收银软件开发/封装",
+          "stage": "开发/封装",
+          "progress": 55,
+          "status": null,
+          "deadline": "2026-11-30",
+          "startDate": "2026-06-01",
+          "invested": null,
+          "investedNote": "暂无单独开发投入金额；AI类截图支出未拆到本项目",
+          "nextAction": "核对 V0.26 工程可保存证据，列出 10/10 摄像头/小票机 USB 测试清单",
+          "note": "V0.26 口述；曾暂停又重启。来源：可见目标看板 2026-10-07",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "当前执行",
+          "bizStatus": "当前执行",
+          "sourceEntry": "项目工作台/03-经营与发展/子项目/副业想法与可行性评估/当前工作台.md"
+        }
+      ]
+    },
+    {
+      "id": "ai-matchstick",
+      "name": "AI火柴人/小卷学AI（03）",
+      "cards": [
+        {
+          "id": "ai-matchstick-main",
+          "name": "小卷学AI 首条与续更",
+          "stage": "已发首条·待补链接验收",
+          "progress": 40,
+          "status": null,
+          "deadline": "2026-12-15",
+          "startDate": "2026-09-15",
+          "invested": null,
+          "investedNote": "10-07 截图 ai 类 751.78 含环境教程+中转站，未拆到本账号；不记虚假项目余额",
+          "nextAction": "补齐抖音+B站作品链接与反馈；完整听看配乐版并记采用文案",
+          "note": "抖音+B站已发；反馈链接待补。无分项目余额（待核验）。",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "tag": "已有成果待验收",
+          "bizStatus": "已有成果待验收",
+          "sourceEntry": "项目工作台/03-经营与发展/子项目/长期发展选择/方案记录/AI火柴人账号-学习与制作接续.md"
+        }
+      ]
     },
     {
       "id": "family",
-      "name": "家庭事务",
-      "progress": 10,
-      "stage": "事务梳理",
-      "deadline": "2026-11-30",
-      "startDate": "2026-09-01",
-      "github": {
-        "openIssues": 0,
-        "closedIssues": 0,
-        "commits": 0,
-        "branches": []
-      },
-      "note": ""
+      "name": "家庭事务（07）",
+      "cards": [
+        {
+          "id": "family-main",
+          "name": "家庭三个专项",
+          "stage": "事务梳理",
+          "progress": 10,
+          "status": null,
+          "deadline": "2026-11-30",
+          "startDate": "2026-09-01",
+          "invested": null,
+          "investedNote": "家庭资金不混入经营可用余额",
+          "nextAction": "核家务约定/父母照护是否有本周真实变化，有则回写家庭单元",
+          "note": "家务约定、资金代管、父母照护入口已有；本轮无新反馈",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "sourceEntry": "项目工作台/07-家庭事务/开始这里.md"
+        }
+      ]
     },
     {
       "id": "million-plan",
       "name": "百万计划资金",
-      "progress": 15,
-      "stage": "资金规划",
-      "deadline": "2027-06-30",
-      "startDate": "2026-01-01",
-      "github": {
-        "openIssues": 0,
-        "closedIssues": 0,
-        "commits": 0,
-        "branches": []
+      "cards": [
+        {
+          "id": "million-baseline",
+          "name": "百万计划基线核验",
+          "stage": "基线待核",
+          "progress": null,
+          "status": "待核验",
+          "legacyMilestonePct": 8,
+          "deadline": "2027-06-30",
+          "startDate": "2026-01-01",
+          "invested": null,
+          "investedNote": "资金基线待完整核验；不显示虚假净资产完成率",
+          "nextAction": "对照资金快照，列出同日现金/债务/未来30天必付项核对清单（不编完成率）",
+          "note": "决策页确认百万方向；旧8%仅为历史里程碑非净资产完成率。资产负债与经营实收看 D-门店业务/极简收入台账（现行台账）。",
+          "github": {
+            "openIssues": 0,
+            "closedIssues": 0,
+            "commits": 0,
+            "branches": []
+          },
+          "sourceEntry": "A-计划目标/百万计划-现行决策页-20260922.md"
+        }
+      ]
+    }
+  ],
+  "money": {
+    "asOf": "2026-10-07",
+    "currency": "CNY",
+    "cashOnHand": {
+      "amount": 2100,
+      "note": "用户口述手头可用，不算上月余额；排除父母代管。来源：资金快照 2026-10-07"
+    },
+    "historicalCash": [
+      {
+        "asOf": "2026-10-01",
+        "amount": 4000,
+        "note": "历史快照约4000元；不得覆盖当前2100"
+      }
+    ],
+    "liabilities": [
+      {
+        "id": "car-loan",
+        "name": "车贷剩余本金",
+        "amount": 78715.16,
+        "asOf": "2026-09-09",
+        "note": "现行台账（D）2026-09-09；月供参考3150（负债/待付参考，非项目余额）"
       },
-      "note": "示例数据 — 非真实账本"
+      {
+        "id": "credit-cards",
+        "name": "信用卡余额合计",
+        "amount": 21000,
+        "asOf": "2026-09-09",
+        "note": "现行台账（D）16000分期+3000+2000；倒卡两张未真实还清；分期月供参考535"
+      },
+      {
+        "id": "weili-loan",
+        "name": "网贷/微粒贷本金",
+        "amount": 21000,
+        "asOf": "2026-09-09",
+        "note": "现行台账（D）2026-09-09；房租催缴被动借款；年化18%；月供参考约1921"
+      }
+    ],
+    "upcomingObligationsNote": {
+      "label": "口述/待账单核对",
+      "text": "10-07 现金2100 相对已知月供参考（车贷3150、信用卡535、微粒贷约1921、房租1200等）偏紧；本期账单金额与到期日待核，不发明缺口数字",
+      "asOf": "2026-10-07"
+    },
+    "loops": [
+      {
+        "projectId": "shoe-acq",
+        "name": "修鞋获客闭环",
+        "balance": null,
+        "budget": null,
+        "status": "待核验",
+        "note": "主库无分项目可用余额"
+      },
+      {
+        "projectId": "health-learn",
+        "name": "健康与学习（06）",
+        "balance": null,
+        "budget": null,
+        "status": "待核验",
+        "note": "主库无分项目可用余额"
+      },
+      {
+        "projectId": "store-ops",
+        "name": "店务与经营（03）",
+        "balance": null,
+        "budget": null,
+        "status": "待核验",
+        "note": "主库无分项目可用余额"
+      },
+      {
+        "projectId": "biz-validate",
+        "name": "经营商业验证（03）",
+        "balance": null,
+        "budget": null,
+        "status": "待核验",
+        "note": "主库无分项目可用余额"
+      },
+      {
+        "projectId": "cashier",
+        "name": "收银软件",
+        "balance": null,
+        "budget": null,
+        "status": "待核验",
+        "note": "主库无分项目可用余额"
+      },
+      {
+        "projectId": "ai-matchstick",
+        "name": "AI火柴人/小卷学AI",
+        "balance": null,
+        "budget": null,
+        "status": "待核验",
+        "note": "主库无分项目可用余额"
+      },
+      {
+        "projectId": "family",
+        "name": "家庭事务",
+        "balance": null,
+        "budget": null,
+        "status": "待核验",
+        "note": "主库无分项目可用余额"
+      },
+      {
+        "projectId": "million-plan",
+        "name": "百万计划资金",
+        "balance": null,
+        "budget": null,
+        "status": "待核验",
+        "note": "资金基线待完整核验；不显示虚假净资产%"
+      }
+    ],
+    "shortfalls": [],
+    "ledgerSource": {
+      "path": "D-门店业务/极简收入台账.md",
+      "role": "当前经营台账（现行）",
+      "debtSnapshotAsOf": "2026-09-09",
+      "note": "债务本金快照来自现行台账；非归档。新事实继续写入既有源记录。"
     }
-  ],
-  "money": [
-    {
-      "projectId": "xiuxiu",
-      "name": "修修会修",
-      "balance": 3200,
-      "budget": 8000,
-      "note": "示例数据 — 投放预算余量"
-    },
-    {
-      "projectId": "old-account",
-      "name": "老号运营",
-      "balance": 5600,
-      "budget": 5000,
-      "note": "示例数据 — 直播与物料"
-    },
-    {
-      "projectId": "store-ops",
-      "name": "经营与发展/店务",
-      "balance": 12000,
-      "budget": 15000,
-      "note": "示例数据 — 店务周转"
-    },
-    {
-      "projectId": "cashier",
-      "name": "收银软件",
-      "balance": 1800,
-      "budget": 4000,
-      "note": "示例数据 — 开发与测试"
-    },
-    {
-      "projectId": "ai-matchstick",
-      "name": "AI火柴人",
-      "balance": -500,
-      "budget": 3000,
-      "note": "示例数据 — 已超支，需补款"
-    },
-    {
-      "projectId": "health-learn",
-      "name": "健康与学习",
-      "balance": 900,
-      "budget": 2000,
-      "note": "示例数据 — 课程与装备"
-    },
-    {
-      "projectId": "family",
-      "name": "家庭事务",
-      "balance": 4500,
-      "budget": 6000,
-      "note": "示例数据 — 家庭开支预留"
-    },
-    {
-      "projectId": "million-plan",
-      "name": "百万计划资金",
-      "balance": 28000,
-      "budget": 100000,
-      "note": "示例数据 — 安全垫不足"
-    }
-  ],
+  },
   "githubMeta": {
     "defaultRepo": "liujiadong1237-jpg/personal-evolution-system",
-    "lastSync": "2026-10-14T04:19:51.921Z",
+    "lastSync": "2026-10-14T04:31:30.601Z",
     "issuesTotal": 0,
     "openIssues": 0,
     "closedIssues": 0,
     "commitsRecent": 4,
     "branches": [
       "main"
+    ],
+    "reposSynced": [
+      "liujiadong1237-jpg/personal-evolution-system",
+      "liujiadong1237-jpg/astra-news-ops"
     ]
-  }
+  },
+  "taxonomyNote": "八大总项目保持不变。06=个人学习/能力训练；03=经营商业验证。口播/英语/AI能力训练归06；能否变现归03，仅互引不双写状态。D-门店业务/极简收入台账=当前经营台账（现行）；E智能体手册有效手册=现行参考，非归档。统一排程+入库负责人=Codex（Windows/本机）；Grok/도윤=秘书（想法与调研），不设第二套日历。",
+  "scheduleOwner": {
+    "owner": "Codex",
+    "platform": "Windows/本机",
+    "role": "统一排程 + 主库入库",
+    "secretary": {
+      "who": "Grok/도윤",
+      "role": "秘书：想法与调研收集",
+      "calendar": false
+    },
+    "note": "唯一排程负责人：Codex（Windows）。不设双排程负责人。"
+  },
+  "activeSources": [
+    {
+      "id": "D-ledger",
+      "path": "D-门店业务/极简收入台账.md",
+      "role": "当前经营台账（现行）",
+      "status": "active"
+    },
+    {
+      "id": "E-manuals",
+      "path": "E-智能体手册/",
+      "role": "有效现行手册（非归档）",
+      "status": "active"
+    },
+    {
+      "id": "vault-snapshot",
+      "path": "项目工作台/03-经营与发展/子项目/资金安排/资金快照-20260922.md",
+      "role": "资金快照入口",
+      "status": "active"
+    },
+    {
+      "id": "visible-board",
+      "path": "项目工作台/可见目标与进度看板-20260922.md",
+      "role": "可见进度快照入口",
+      "status": "active"
+    }
+  ]
 }

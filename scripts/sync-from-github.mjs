@@ -1,19 +1,11 @@
 #!/usr/bin/env node
 /**
  * sync-from-github.mjs
- * Refresh data/board.json from GitHub metadata (issues, commits, branches).
- * Money fields are preserved from existing board.json / config — GitHub has no money API.
- *
- * Usage:
- *   node scripts/sync-from-github.mjs
- *   GITHUB_TOKEN=xxx node scripts/sync-from-github.mjs
- *   # or rely on `gh` CLI auth:
- *   gh auth token | …  (script auto-detects gh)
- *
- * Default target: liujiadong1237-jpg/personal-evolution-system
- * Extra repos: config.json → sourceRepos
+ * Refresh GitHub meta on data/board.json.
+ * PRESERVES: money, columns/cards (progress/stage/deadline/invested/nextAction/bizStatus),
+ * scheduleOwner, taxonomyNote, activeSources.
+ * Only refreshes githubMeta + per-card github stats.
  */
-
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -47,7 +39,6 @@ async function ghFetch(path, token) {
     "X-GitHub-Api-Version": "2022-11-28",
   };
   if (token) headers.Authorization = "Bearer " + token;
-
   const res = await fetch(url, { headers });
   if (!res.ok) {
     const text = await res.text();
@@ -64,7 +55,6 @@ async function fetchAllPages(path, token, maxPages = 5) {
     if (!Array.isArray(batch) || batch.length === 0) break;
     items.push(...batch);
     if (batch.length < 100) break;
-    // simple page bump
     const page = i + 2;
     url = path.includes("?")
       ? path + "&per_page=100&page=" + page
@@ -73,7 +63,19 @@ async function fetchAllPages(path, token, maxPages = 5) {
   return items;
 }
 
-function matchProject(issueOrBranch, projectsCfg) {
+function flattenCardCfg(config) {
+  const out = [];
+  for (const col of config.columns || []) {
+    for (const c of col.cards || []) {
+      out.push(Object.assign({}, c, { columnId: col.id }));
+    }
+  }
+  // legacy flat projects
+  for (const p of config.projects || []) out.push(p);
+  return out;
+}
+
+function matchCard(issueOrBranch, cardsCfg) {
   const hay = (
     (issueOrBranch.title || "") +
     " " +
@@ -86,7 +88,7 @@ function matchProject(issueOrBranch, projectsCfg) {
       .join(" ")
   ).toLowerCase();
 
-  for (const p of projectsCfg) {
+  for (const p of cardsCfg) {
     const hints = []
       .concat(p.githubLabels || [])
       .concat(p.branchHints || [])
@@ -98,7 +100,7 @@ function matchProject(issueOrBranch, projectsCfg) {
   return null;
 }
 
-async function syncRepo(repo, token, projectsCfg) {
+async function syncRepo(repo, token, cardsCfg) {
   console.log("Syncing " + repo + " …");
   const [issues, commits, branches] = await Promise.all([
     fetchAllPages("/repos/" + repo + "/issues?state=all", token).catch(function (e) {
@@ -119,29 +121,23 @@ async function syncRepo(repo, token, projectsCfg) {
     return !i.pull_request;
   });
 
-  const perProject = {};
-  for (const p of projectsCfg) {
-    perProject[p.id] = {
-      openIssues: 0,
-      closedIssues: 0,
-      commits: 0,
-      branches: [],
-    };
+  const perCard = {};
+  for (const p of cardsCfg) {
+    perCard[p.id] = { openIssues: 0, closedIssues: 0, commits: 0, branches: [] };
   }
 
   for (const issue of pureIssues) {
-    const id = matchProject(issue, projectsCfg);
-    if (!id || !perProject[id]) continue;
-    if (issue.state === "open") perProject[id].openIssues++;
-    else perProject[id].closedIssues++;
+    const id = matchCard(issue, cardsCfg);
+    if (!id || !perCard[id]) continue;
+    if (issue.state === "open") perCard[id].openIssues++;
+    else perCard[id].closedIssues++;
   }
 
   for (const b of branches) {
-    const id = matchProject({ name: b.name }, projectsCfg);
-    if (id && perProject[id]) perProject[id].branches.push(b.name);
+    const id = matchCard({ name: b.name }, cardsCfg);
+    if (id && perCard[id]) perCard[id].branches.push(b.name);
   }
 
-  // Commits are repo-level; distribute a count hint, or leave on meta
   return {
     repo,
     issuesTotal: pureIssues.length,
@@ -155,89 +151,94 @@ async function syncRepo(repo, token, projectsCfg) {
     branches: branches.map(function (b) {
       return b.name;
     }),
-    perProject,
+    perCard,
   };
 }
 
 async function main() {
   const config = loadJson(CONFIG_PATH, {});
-  const board = loadJson(BOARD_PATH, {
-    projects: [],
-    money: [],
-    sourceRepos: [],
-  });
-
+  const board = loadJson(BOARD_PATH, { columns: [], money: {}, sourceRepos: [] });
   const token = getToken();
-  if (!token) {
-    console.warn(
-      "No GITHUB_TOKEN / gh auth token found. Will write timestamp-only update; GitHub fields stay as-is."
-    );
-  }
+  if (!token) console.warn("No token; timestamp-only update.");
 
-  const repos = config.sourceRepos ||
+  const repos =
+    config.sourceRepos ||
     board.sourceRepos || [config.defaultSourceRepo || "liujiadong1237-jpg/personal-evolution-system"];
-  const projectsCfg = config.projects || [];
+  const cardsCfg = flattenCardCfg(config);
 
   const metas = [];
   if (token) {
     for (const repo of repos) {
       try {
-        metas.push(await syncRepo(repo, token, projectsCfg));
+        metas.push(await syncRepo(repo, token, cardsCfg));
       } catch (e) {
         console.error("Failed " + repo + ":", e.message);
       }
     }
   }
 
-  // Merge GitHub stats into existing projects (preserve progress/stage/deadline/money)
   const mergedMeta = metas[0] || null;
-  const projects = (board.projects || []).map(function (p) {
-    const stats =
-      (mergedMeta && mergedMeta.perProject && mergedMeta.perProject[p.id]) ||
-      p.github ||
-      {};
-    return Object.assign({}, p, {
-      github: {
-        openIssues: stats.openIssues != null ? stats.openIssues : (p.github && p.github.openIssues) || 0,
-        closedIssues:
-          stats.closedIssues != null ? stats.closedIssues : (p.github && p.github.closedIssues) || 0,
-        commits: stats.commits != null ? stats.commits : (p.github && p.github.commits) || 0,
-        branches: stats.branches || (p.github && p.github.branches) || [],
-      },
+  const perCard = {};
+  for (const m of metas) {
+    for (const [id, stats] of Object.entries(m.perCard || {})) {
+      if (!perCard[id]) perCard[id] = { openIssues: 0, closedIssues: 0, commits: 0, branches: [] };
+      perCard[id].openIssues += stats.openIssues || 0;
+      perCard[id].closedIssues += stats.closedIssues || 0;
+      perCard[id].branches = (perCard[id].branches || []).concat(stats.branches || []);
+    }
+  }
+
+  const columns = (board.columns || []).map(function (col) {
+    return Object.assign({}, col, {
+      cards: (col.cards || []).map(function (card) {
+        const stats = perCard[card.id] || card.github || {};
+        return Object.assign({}, card, {
+          github: {
+            openIssues: stats.openIssues != null ? stats.openIssues : (card.github && card.github.openIssues) || 0,
+            closedIssues:
+              stats.closedIssues != null ? stats.closedIssues : (card.github && card.github.closedIssues) || 0,
+            commits: stats.commits != null ? stats.commits : (card.github && card.github.commits) || 0,
+            branches: stats.branches || (card.github && card.github.branches) || [],
+          },
+        });
+      }),
     });
   });
 
-  // Money: keep existing; never invent from GitHub
-  const money = board.money || [];
-
-  const out = {
+  const out = Object.assign({}, board, {
     updatedAt: new Date().toISOString(),
-    source: token ? "sync" : board.source || "seed",
+    source: token ? "sync" : board.source || "vault",
     sourceRepos: repos,
-    projects,
-    money,
+    columns,
+    money: board.money, // never invent
+    scheduleOwner: board.scheduleOwner || config.scheduleOwner,
+    taxonomyNote: board.taxonomyNote,
+    activeSources: board.activeSources,
     githubMeta: {
       defaultRepo: config.defaultSourceRepo || repos[0],
       lastSync: new Date().toISOString(),
       issuesTotal: mergedMeta ? mergedMeta.issuesTotal : (board.githubMeta && board.githubMeta.issuesTotal) || 0,
       openIssues: mergedMeta ? mergedMeta.openIssues : (board.githubMeta && board.githubMeta.openIssues) || 0,
-      closedIssues:
-        mergedMeta ? mergedMeta.closedIssues : (board.githubMeta && board.githubMeta.closedIssues) || 0,
-      commitsRecent:
-        mergedMeta ? mergedMeta.commitsRecent : (board.githubMeta && board.githubMeta.commitsRecent) || 0,
+      closedIssues: mergedMeta ? mergedMeta.closedIssues : (board.githubMeta && board.githubMeta.closedIssues) || 0,
+      commitsRecent: mergedMeta ? mergedMeta.commitsRecent : (board.githubMeta && board.githubMeta.commitsRecent) || 0,
       branches: mergedMeta ? mergedMeta.branches : (board.githubMeta && board.githubMeta.branches) || [],
+      reposSynced: metas.map(function (m) {
+        return m.repo;
+      }),
     },
-  };
+  });
+  // drop legacy flat projects if present
+  delete out.projects;
 
   writeFileSync(BOARD_PATH, JSON.stringify(out, null, 2) + "\n", "utf8");
   console.log("Wrote " + BOARD_PATH);
   console.log(
-    "Projects: " +
-      projects.length +
-      ", money rows: " +
-      money.length +
-      ", issues: " +
-      out.githubMeta.issuesTotal
+    "Columns: " +
+      columns.length +
+      ", cards: " +
+      columns.reduce(function (n, c) {
+        return n + (c.cards || []).length;
+      }, 0)
   );
 }
 

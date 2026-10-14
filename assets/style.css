@@ -3,16 +3,14 @@
   --bg: #0f1419;
   --bg-panel: #1a2332;
   --bg-card: #243044;
-  --bg-card-hover: #2d3a52;
   --border: #334155;
   --text: #e2e8f0;
   --text-muted: #94a3b8;
   --accent: #38bdf8;
-  --accent-dim: #0ea5e9;
   --success: #34d399;
   --warning: #fbbf24;
   --danger: #f87171;
-  --sidebar-w: 300px;
+  --sidebar-w: 320px;
   --radius: 10px;
   --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
@@ -38,7 +36,6 @@ body {
   line-height: 1.5;
 }
 
-/* Header */
 .header {
   display: flex;
   align-items: center;
@@ -54,17 +51,16 @@ body {
 }
 
 .header h1 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
 }
 
 .header-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
@@ -76,24 +72,17 @@ body {
   border-radius: 999px;
   background: rgba(56, 189, 248, 0.12);
   color: var(--accent);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
-.badge.warn {
-  background: rgba(251, 191, 36, 0.15);
-  color: var(--warning);
+.badge.ok {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--success);
 }
 
-.badge.example {
-  background: rgba(248, 113, 113, 0.12);
-  color: var(--danger);
-}
-
-/* Layout */
 .layout {
   display: grid;
   grid-template-columns: 1fr var(--sidebar-w);
-  gap: 0;
   min-height: calc(100vh - 64px);
 }
 
@@ -115,18 +104,19 @@ body {
 .sidebar h2 {
   font-size: 1rem;
   margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
-.sidebar .example-tag {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--danger);
-  background: rgba(248, 113, 113, 0.15);
-  padding: 2px 8px;
-  border-radius: 4px;
+.sidebar-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.section-title-sm {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 14px 0 8px;
 }
 
 .money-total {
@@ -140,18 +130,17 @@ body {
 .money-total .label {
   font-size: 0.75rem;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .money-total .amount {
   font-size: 1.5rem;
   font-weight: 700;
   margin-top: 4px;
+  color: var(--success);
 }
 
 .money-total .sub {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   margin-top: 4px;
 }
@@ -162,12 +151,16 @@ body {
   padding: 12px;
   margin-bottom: 10px;
   border: 1px solid var(--border);
-  transition: border-color 0.15s;
 }
 
 .money-item.short {
   border-color: var(--danger);
   background: rgba(248, 113, 113, 0.08);
+}
+
+.money-item.info {
+  border-color: var(--warning);
+  background: rgba(251, 191, 36, 0.08);
 }
 
 .money-item .row {
@@ -179,7 +172,7 @@ body {
 
 .money-item .name {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .money-item .bal {
@@ -195,30 +188,12 @@ body {
   color: var(--success);
 }
 
-.money-bar {
-  height: 6px;
-  background: rgba(148, 163, 184, 0.2);
-  border-radius: 3px;
-  margin-top: 8px;
-  overflow: hidden;
-}
-
-.money-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.4s ease;
-}
-
-.money-bar-fill.ok {
-  background: linear-gradient(90deg, #059669, var(--success));
-}
-
-.money-bar-fill.short {
-  background: linear-gradient(90deg, #dc2626, var(--danger));
+.money-item .bal.pending {
+  color: var(--warning);
 }
 
 .money-item .meta {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   margin-top: 6px;
 }
@@ -241,7 +216,6 @@ body {
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-/* Section titles */
 .section-title {
   font-size: 0.95rem;
   font-weight: 600;
@@ -259,7 +233,6 @@ body {
   background: var(--border);
 }
 
-/* Kanban */
 .kanban {
   display: flex;
   gap: 14px;
@@ -271,22 +244,24 @@ body {
 }
 
 .kanban-col {
-  flex: 0 0 220px;
+  flex: 0 0 260px;
   background: var(--bg-panel);
   border-radius: var(--radius);
   border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   min-height: 180px;
+  max-height: 78vh;
 }
 
 .kanban-col-header {
   padding: 12px 14px 8px;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .kanban-col-header h3 {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -294,7 +269,7 @@ body {
 }
 
 .kanban-col-header .pct {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   margin-top: 2px;
 }
@@ -302,6 +277,10 @@ body {
 .kanban-col-body {
   padding: 10px;
   flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .card {
@@ -309,54 +288,118 @@ body {
   padding: 12px;
   color: #fff;
   box-shadow: var(--shadow);
-  cursor: default;
-  transition: transform 0.15s, box-shadow 0.15s;
   position: relative;
   overflow: hidden;
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+.card.pending {
+  outline: 1px dashed rgba(251, 191, 36, 0.55);
+}
+
+.card-fill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.card-tag.pending {
+  background: rgba(251, 191, 36, 0.35);
+  color: #fff8e1;
 }
 
 .card .stage {
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.78rem;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.triple {
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.triple-row {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 6px;
+  font-size: 0.75rem;
   margin-bottom: 6px;
 }
 
-.card .deadline {
-  font-size: 0.8rem;
-  opacity: 0.9;
+.triple-row:last-child {
+  margin-bottom: 0;
 }
 
-.card .progress-label {
-  font-size: 0.75rem;
-  margin-top: 8px;
+.triple-row .k {
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.triple-row .v {
+  line-height: 1.35;
+}
+
+.triple-row.next .v {
   font-weight: 600;
-  opacity: 0.95;
+  color: #fef3c7;
 }
 
-.card .note {
+.triple-row .hint {
+  opacity: 0.7;
+  font-weight: 400;
+  font-size: 0.68rem;
+}
+
+.card .deadline {
   font-size: 0.72rem;
+  opacity: 0.85;
+}
+
+.card .note,
+.card .meta-line {
+  font-size: 0.68rem;
   opacity: 0.75;
   margin-top: 4px;
 }
 
-.card .gh-stats {
-  font-size: 0.7rem;
-  opacity: 0.7;
-  margin-top: 6px;
+.card-link {
+  color: #bae6fd;
+  text-decoration: underline;
 }
 
-/* Gantt */
 .gantt-wrap {
   background: var(--bg-panel);
   border-radius: var(--radius);
   border: 1px solid var(--border);
   padding: 16px;
   overflow-x: auto;
+}
+
+.gantt-wrap .empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }
 
 .gantt-table {
@@ -376,7 +419,6 @@ body {
   color: var(--text-muted);
   font-weight: 500;
   border-bottom: 1px solid var(--border);
-  white-space: nowrap;
 }
 
 .gantt-table td {
@@ -413,7 +455,6 @@ body {
   font-size: 0.65rem;
   font-weight: 700;
   color: #fff;
-  white-space: nowrap;
 }
 
 .gantt-today {
@@ -423,7 +464,6 @@ body {
   width: 2px;
   background: var(--warning);
   z-index: 2;
-  pointer-events: none;
 }
 
 .gantt-axis {
@@ -435,14 +475,12 @@ body {
   padding-left: 170px;
 }
 
-/* Empty / loading */
 .status-msg {
   padding: 40px;
   text-align: center;
   color: var(--text-muted);
 }
 
-/* Responsive */
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
