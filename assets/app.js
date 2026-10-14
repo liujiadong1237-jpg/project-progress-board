@@ -566,9 +566,9 @@
       infoEl.innerHTML =
         '<div class="money-item info"><div class="name">' +
         escapeHtml(n.label || "备注") +
-        "</div><div class="meta">截至 " +
+        '</div><div class="meta">截至 ' +
         escapeHtml(n.asOf || "") +
-        "</div><div class="meta">' +
+        '</div><div class="meta">' +
         escapeHtml(n.text || "") +
         "</div></div>";
     }
