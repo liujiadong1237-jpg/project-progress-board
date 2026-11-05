@@ -2,57 +2,78 @@
   "title": "项目进度看板",
   "defaultSourceRepo": "liujiadong1237-jpg/personal-evolution-system",
   "sourceRepos": [
-    "liujiadong1237-jpg/personal-evolution-system"
+    "liujiadong1237-jpg/personal-evolution-system",
+    "liujiadong1237-jpg/astra-news-ops"
   ],
-  "moneyShortfallThreshold": 0,
-  "projects": [
+  "scheduleOwner": {
+    "owner": "Codex",
+    "platform": "Windows/本机",
+    "role": "统一排程 + 主库入库"
+  },
+  "columns": [
     {
-      "id": "xiuxiu",
-      "name": "修修会修",
-      "githubLabels": ["修修会修", "xiuxiu"],
-      "branchHints": ["xiuxiu", "修修"]
-    },
-    {
-      "id": "old-account",
-      "name": "老号运营",
-      "githubLabels": ["老号运营", "old-account"],
-      "branchHints": ["old-account", "老号"]
-    },
-    {
-      "id": "store-ops",
-      "name": "经营与发展/店务",
-      "githubLabels": ["店务", "经营", "store"],
-      "branchHints": ["store", "店务"]
-    },
-    {
-      "id": "cashier",
-      "name": "收银软件",
-      "githubLabels": ["收银", "cashier"],
-      "branchHints": ["cashier", "收银"]
-    },
-    {
-      "id": "ai-matchstick",
-      "name": "AI火柴人",
-      "githubLabels": ["火柴人", "ai-matchstick"],
-      "branchHints": ["matchstick", "火柴人"]
+      "id": "shoe-acq",
+      "name": "修鞋获客闭环",
+      "cards": [
+        { "id": "xiuxiu", "name": "修修会修（新号）", "githubLabels": ["修修会修", "xiuxiu"], "branchHints": ["xiuxiu", "修修"] },
+        { "id": "old-live", "name": "老号直播", "githubLabels": ["老号", "直播"], "branchHints": ["live", "直播"] },
+        { "id": "old-sv", "name": "老号短视频", "githubLabels": ["老号", "短视频"], "branchHints": ["old", "短视频"] },
+        { "id": "home-leisure", "name": "主页休闲账号", "githubLabels": ["主页休闲"], "branchHints": ["leisure"] },
+        { "id": "home-sv-a", "name": "主页短视频账号A", "githubLabels": ["主页短视频A"], "branchHints": ["home-sv-a"] },
+        { "id": "home-sv-b", "name": "主页短视频账号B", "githubLabels": ["主页短视频B"], "branchHints": ["home-sv-b"] }
+      ]
     },
     {
       "id": "health-learn",
-      "name": "健康与学习",
-      "githubLabels": ["健康", "学习", "health"],
-      "branchHints": ["health", "learn"]
+      "name": "健康与学习（06）",
+      "cards": [
+        { "id": "health-learn-main", "name": "健康与学习基线", "githubLabels": ["健康", "学习"], "branchHints": ["health", "learn"] },
+        { "id": "koubo-software", "name": "口播软件学习", "githubLabels": ["口播"], "branchHints": ["koubo", "口播"] },
+        { "id": "gape-house", "name": "Gape House 学英语", "githubLabels": ["英语", "Gape"], "branchHints": ["english", "gape"] }
+      ]
+    },
+    {
+      "id": "store-ops",
+      "name": "店务与经营（03）",
+      "cards": [
+        { "id": "store-daily", "name": "日常店务交付", "githubLabels": ["店务", "经营"], "branchHints": ["store", "店务"] }
+      ]
+    },
+    {
+      "id": "biz-validate",
+      "name": "经营商业验证（03）",
+      "cards": [
+        { "id": "english-anim-sell", "name": "英语动画售卖", "githubLabels": ["英语动画", "闲鱼"], "branchHints": ["english-anim"] },
+        { "id": "astra-news", "name": "四平台资讯→变现", "githubLabels": ["资讯", "astra-news"], "branchHints": ["news", "astra-news"] }
+      ]
+    },
+    {
+      "id": "cashier",
+      "name": "收银软件（03）",
+      "cards": [
+        { "id": "cashier-dev", "name": "收银软件", "githubLabels": ["收银", "cashier"], "branchHints": ["cashier", "收银"] }
+      ]
+    },
+    {
+      "id": "ai-matchstick",
+      "name": "AI火柴人/小卷学AI（03）",
+      "cards": [
+        { "id": "ai-matchstick-main", "name": "小卷学AI", "githubLabels": ["火柴人", "小卷"], "branchHints": ["matchstick", "火柴人"] }
+      ]
     },
     {
       "id": "family",
-      "name": "家庭事务",
-      "githubLabels": ["家庭", "family"],
-      "branchHints": ["family", "家庭"]
+      "name": "家庭事务（07）",
+      "cards": [
+        { "id": "family-main", "name": "家庭事务", "githubLabels": ["家庭"], "branchHints": ["family"] }
+      ]
     },
     {
       "id": "million-plan",
       "name": "百万计划资金",
-      "githubLabels": ["百万计划", "资金"],
-      "branchHints": ["million", "资金"]
+      "cards": [
+        { "id": "million-baseline", "name": "百万计划", "githubLabels": ["百万计划", "资金"], "branchHints": ["million", "资金"] }
+      ]
     }
   ]
 }

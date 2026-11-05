@@ -1,131 +1,133 @@
 /**
- * Project Progress Board — vanilla JS, no external deps.
- * Reads data/board.json first; optionally tries live GitHub API and falls back silently.
+ * Project Progress Board — closed-loop Kanban.
+ * Columns = loops; cards show 投入 / 进度 / 下一步.
+ * Money from vault facts only; null → 待核验 / 暂无.
+ * No external CDN.
  */
 (function () {
   "use strict";
 
-  const SHORTFALL_THRESHOLD = 0; // balance < budget gap treated as short when gap > 0 or balance < 0
-
-  /**
-   * Map progress 0–100 to a fill color (deeper / more saturated as progress rises).
-   */
   function progressColor(pct) {
-    const p = Math.max(0, Math.min(100, Number(pct) || 0));
-    // Hue: red(0) → amber(40) → green(145)
-    const hue = (p / 100) * 145;
-    const sat = 55 + (p / 100) * 25;
-    const light = 28 + (p / 100) * 12;
-    return `hsl(${hue}, ${sat}%, ${light}%)`;
+    if (pct == null || pct === "") return "hsl(210, 18%, 32%)";
+    var p = Math.max(0, Math.min(100, Number(pct) || 0));
+    var hue = (p / 100) * 145;
+    var sat = 55 + (p / 100) * 25;
+    var light = 28 + (p / 100) * 12;
+    return "hsl(" + hue + ", " + sat + "%, " + light + "%)";
   }
 
   function progressColorSoft(pct) {
-    const p = Math.max(0, Math.min(100, Number(pct) || 0));
-    const hue = (p / 100) * 145;
-    return `hsl(${hue}, 60%, 42%)`;
+    if (pct == null || pct === "") return "hsl(210, 25%, 40%)";
+    var p = Math.max(0, Math.min(100, Number(pct) || 0));
+    var hue = (p / 100) * 145;
+    return "hsl(" + hue + ", 60%, 42%)";
   }
 
   function formatCNY(n) {
-    const v = Number(n) || 0;
-    const sign = v < 0 ? "-" : "";
-    return sign + "¥" + Math.abs(v).toLocaleString("zh-CN");
+    if (n == null || n === "") return "待核验";
+    var v = Number(n);
+    if (isNaN(v)) return "待核验";
+    var sign = v < 0 ? "-" : "";
+    return sign + "¥" + Math.abs(v).toLocaleString("zh-CN", { maximumFractionDigits: 2 });
+  }
+
+  function formatInvested(card) {
+    if (card.invested == null || card.invested === "") {
+      return "暂无";
+    }
+    return formatCNY(card.invested);
+  }
+
+  function formatProgress(card) {
+    if (card.status === "待核验" && (card.progress == null || card.progress === "")) {
+      return "待核验";
+    }
+    if (card.progress == null || card.progress === "") {
+      if (card.legacyMilestonePct != null) {
+        return "基线待核（历史里程碑 " + card.legacyMilestonePct + "%）";
+      }
+      return "待核验";
+    }
+    return card.progress + "%";
   }
 
   function parseDate(s) {
     if (!s) return null;
-    const d = new Date(s);
+    var d = new Date(s);
     return isNaN(d.getTime()) ? null : d;
   }
 
   function daysBetween(a, b) {
-    return (b - a) / (86400000);
+    return (b - a) / 86400000;
   }
 
   function fmtDate(d) {
     if (!d) return "—";
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
     return y + "-" + m + "-" + day;
   }
 
-  function isShort(item) {
-    const balance = Number(item.balance) || 0;
-    const budget = Number(item.budget) || 0;
-    const gap = budget - balance;
-    return balance < 0 || gap > SHORTFALL_THRESHOLD;
+  function escapeHtml(str) {
+    return String(str == null ? "" : str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
-  function shortfallAmount(item) {
-    const balance = Number(item.balance) || 0;
-    const budget = Number(item.budget) || 0;
-    if (balance < 0) return Math.abs(balance) + Math.max(0, budget);
-    return Math.max(0, budget - balance);
+  function toCST(iso) {
+    if (!iso) return "—";
+    try {
+      return new Date(iso).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
+    } catch (e) {
+      return String(iso);
+    }
+  }
+
+  function flattenCards(board) {
+    var out = [];
+    (board.columns || []).forEach(function (col) {
+      (col.cards || []).forEach(function (card) {
+        out.push(Object.assign({}, card, { columnId: col.id, columnName: col.name }));
+      });
+    });
+    // legacy flat projects
+    (board.projects || []).forEach(function (p) {
+      out.push(p);
+    });
+    return out;
   }
 
   async function loadBoardJson() {
-    const res = await fetch("data/board.json", { cache: "no-store" });
+    var res = await fetch("data/board.json", { cache: "no-store" });
     if (!res.ok) throw new Error("无法加载 data/board.json (" + res.status + ")");
     return res.json();
   }
 
-  /**
-   * Optional live GitHub API enrichment. Fails silently in China / offline.
-   */
   async function tryLiveGithub(board) {
-    const repo =
+    var repo =
       (board.githubMeta && board.githubMeta.defaultRepo) ||
       (board.sourceRepos && board.sourceRepos[0]);
     if (!repo) return board;
 
-    const controller = new AbortController();
-    const timer = setTimeout(function () {
+    var controller = new AbortController();
+    var timer = setTimeout(function () {
       controller.abort();
     }, 4000);
 
     try {
-      const [issuesRes, commitsRes, branchesRes] = await Promise.all([
-        fetch(
-          "https://api.github.com/repos/" + repo + "/issues?state=all&per_page=30",
-          { signal: controller.signal, headers: { Accept: "application/vnd.github+json" } }
-        ),
-        fetch(
-          "https://api.github.com/repos/" + repo + "/commits?per_page=20",
-          { signal: controller.signal, headers: { Accept: "application/vnd.github+json" } }
-        ),
-        fetch(
-          "https://api.github.com/repos/" + repo + "/branches?per_page=30",
-          { signal: controller.signal, headers: { Accept: "application/vnd.github+json" } }
-        ),
-      ]);
-
+      var issuesRes = await fetch(
+        "https://api.github.com/repos/" + repo + "/issues?state=all&per_page=10",
+        { signal: controller.signal, headers: { Accept: "application/vnd.github+json" } }
+      );
       clearTimeout(timer);
-      if (!issuesRes.ok || !commitsRes.ok || !branchesRes.ok) return board;
-
-      const issues = await issuesRes.json();
-      const commits = await commitsRes.json();
-      const branches = await branchesRes.json();
-
-      const openIssues = issues.filter(function (i) {
-        return i.state === "open" && !i.pull_request;
-      }).length;
-      const closedIssues = issues.filter(function (i) {
-        return i.state === "closed" && !i.pull_request;
-      }).length;
-
+      if (!issuesRes.ok) return board;
       board = Object.assign({}, board);
       board.githubMeta = Object.assign({}, board.githubMeta || {}, {
         lastLiveFetch: new Date().toISOString(),
         liveOk: true,
-        issuesTotal: openIssues + closedIssues,
-        openIssues: openIssues,
-        closedIssues: closedIssues,
-        commitsRecent: Array.isArray(commits) ? commits.length : 0,
-        branches: Array.isArray(branches)
-          ? branches.map(function (b) {
-              return b.name;
-            })
-          : [],
       });
       board._liveSource = "api.github.com";
       return board;
@@ -136,136 +138,217 @@
   }
 
   function renderHeader(board) {
-    const el = document.getElementById("header-meta");
+    var el = document.getElementById("header-meta");
     if (!el) return;
-    const updated = board.updatedAt
-      ? new Date(board.updatedAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })
-      : "—";
-    const source = board._liveSource
-      ? "实时 API + 本地 JSON"
-      : board.source === "sync"
-        ? "同步脚本"
-        : "本地 board.json";
-    let html =
-      '<span class="badge">数据源：' +
-      source +
-      "</span>" +
-      "<span>更新：" +
-      updated +
-      " (CST)</span>" +
-      '<span class="badge example">余额为示例数据</span>';
-    if (board.githubMeta && board.githubMeta.liveOk) {
-      html +=
-        '<span class="badge">Issues ' +
-        (board.githubMeta.openIssues || 0) +
-        " 开 / " +
-        (board.githubMeta.closedIssues || 0) +
-        " 关 · Commits≈" +
-        (board.githubMeta.commitsRecent || 0) +
+    var asOf = board.asOf || (board.money && board.money.asOf) || "—";
+    var sync = board.githubMeta && board.githubMeta.lastSync
+      ? toCST(board.githubMeta.lastSync)
+      : toCST(board.updatedAt);
+    var repos = (board.sourceRepos || []).join(" · ") || "—";
+    var sched = board.scheduleOwner;
+    var schedBadge = "";
+    if (sched && sched.owner) {
+      schedBadge =
+        '<span class="badge ok">排程/入库：' +
+        escapeHtml(sched.owner) +
+        (sched.platform ? "（" + escapeHtml(sched.platform) + "）" : "") +
         "</span>";
+      if (sched.secretary && sched.secretary.who) {
+        schedBadge +=
+          '<span class="badge">秘书：' +
+          escapeHtml(sched.secretary.who) +
+          "（想法/调研，无日历）</span>";
+      }
     }
+    var html =
+      '<span class="badge">数据截止 ' +
+      escapeHtml(asOf) +
+      "</span>" +
+      "<span>GitHub 同步：" +
+      escapeHtml(sync) +
+      " CST</span>" +
+      '<span class="badge">源：' +
+      escapeHtml(repos) +
+      "</span>" +
+      schedBadge +
+      '<span class="badge ok">金库事实 · 无示例数据</span>';
     el.innerHTML = html;
   }
 
-  function renderKanban(projects) {
-    const root = document.getElementById("kanban");
+  function renderCard(card) {
+    var pct = card.progress;
+    var cardEl = document.createElement("div");
+    cardEl.className = "card" + (card.status === "待核验" ? " pending" : "");
+    cardEl.style.background = progressColor(pct);
+
+    var fill = document.createElement("div");
+    fill.className = "card-fill";
+    fill.style.width =
+      pct == null || pct === "" ? "0%" : Math.max(0, Math.min(100, Number(pct))) + "%";
+
+    var tag =
+      card.tag
+        ? '<span class="card-tag">' + escapeHtml(card.tag) + "</span>"
+        : card.status === "待核验"
+          ? '<span class="card-tag pending">待核验</span>'
+          : "";
+
+    var legacy =
+      card.legacyMilestonePct != null
+        ? '<div class="meta-line">历史里程碑 ' +
+          card.legacyMilestonePct +
+          "%（非净资产完成率）</div>"
+        : "";
+
+    var link =
+      card.link
+        ? '<div class="meta-line"><a class="card-link" href="' +
+          escapeHtml(card.link) +
+          '" target="_blank" rel="noopener">相关仓库</a></div>'
+        : "";
+
+    var related =
+      card.relatedCardIds && card.relatedCardIds.length
+        ? '<div class="meta-line">互引：' +
+          escapeHtml(card.relatedCardIds.join(" · ")) +
+          "</div>"
+        : "";
+
+    cardEl.innerHTML =
+      '<div class="card-title">' +
+      escapeHtml(card.name || card.id) +
+      tag +
+      "</div>" +
+      '<div class="stage">' +
+      escapeHtml(card.stage || "未设阶段") +
+      "</div>" +
+      '<div class="triple">' +
+      '<div class="triple-row"><span class="k">投入</span><span class="v">' +
+      escapeHtml(formatInvested(card)) +
+      (card.investedNote
+        ? ' <span class="hint">(' + escapeHtml(card.investedNote) + ")</span>"
+        : "") +
+      "</span></div>" +
+      '<div class="triple-row"><span class="k">进度</span><span class="v">' +
+      escapeHtml(formatProgress(card)) +
+      (card.progress != null && card.progress !== ""
+        ? " · " + escapeHtml(card.stage || "")
+        : "") +
+      "</span></div>" +
+      '<div class="triple-row next"><span class="k">下一步</span><span class="v">' +
+      escapeHtml(card.nextAction || "（待补具体动作）") +
+      "</span></div>" +
+      "</div>" +
+      '<div class="deadline">截止：' +
+      escapeHtml(card.deadline || "未定") +
+      "</div>" +
+      legacy +
+      (card.note ? '<div class="note">' + escapeHtml(card.note) + "</div>" : "") +
+      related +
+      link;
+
+    cardEl.appendChild(fill);
+    return cardEl;
+  }
+
+  function renderKanban(board) {
+    var root = document.getElementById("kanban");
     if (!root) return;
     root.innerHTML = "";
+    var columns = board.columns || [];
+    if (!columns.length && board.projects) {
+      // fallback legacy
+      columns = board.projects.map(function (p) {
+        return { id: p.id, name: p.name, cards: [p] };
+      });
+    }
 
-    projects.forEach(function (p) {
-      const col = document.createElement("div");
-      col.className = "kanban-col";
+    columns.forEach(function (col) {
+      var colEl = document.createElement("div");
+      colEl.className = "kanban-col";
+      var cards = col.cards || [];
+      var known = cards.filter(function (c) {
+        return c.progress != null && c.progress !== "";
+      });
+      var avg =
+        known.length === 0
+          ? null
+          : Math.round(
+              known.reduce(function (s, c) {
+                return s + Number(c.progress);
+              }, 0) / known.length
+            );
 
-      const header = document.createElement("div");
+      var header = document.createElement("div");
       header.className = "kanban-col-header";
       header.innerHTML =
         "<h3 title=\"" +
-        escapeHtml(p.name) +
+        escapeHtml(col.name) +
         "\">" +
-        escapeHtml(p.name) +
+        escapeHtml(col.name) +
         "</h3>" +
-        '<div class="pct">进度 ' +
-        (p.progress || 0) +
-        "%</div>";
+        '<div class="pct">' +
+        cards.length +
+        " 张卡 · " +
+        (avg == null ? "进度待核" : "均 " + avg + "%") +
+        "</div>";
 
-      const body = document.createElement("div");
+      var body = document.createElement("div");
       body.className = "kanban-col-body";
+      cards.forEach(function (card) {
+        body.appendChild(renderCard(card));
+      });
 
-      const card = document.createElement("div");
-      card.className = "card";
-      card.style.background = progressColor(p.progress);
-      card.style.boxShadow =
-        "0 4px 16px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.08)";
-
-      // Visual fill bar at bottom reflecting progress
-      const fillBar = document.createElement("div");
-      fillBar.style.cssText =
-        "position:absolute;left:0;bottom:0;height:4px;width:" +
-        Math.max(0, Math.min(100, p.progress || 0)) +
-        "%;background:rgba(255,255,255,0.45);";
-
-      let gh = "";
-      if (p.github) {
-        const parts = [];
-        if (p.github.openIssues != null)
-          parts.push("开Issue " + p.github.openIssues);
-        if (p.github.commits) parts.push("提交 " + p.github.commits);
-        if (p.github.branches && p.github.branches.length)
-          parts.push("分支 " + p.github.branches.length);
-        if (parts.length) gh = '<div class="gh-stats">' + parts.join(" · ") + "</div>";
-      }
-
-      card.innerHTML =
-        '<div class="stage">' +
-        escapeHtml(p.stage || "未设阶段") +
-        "</div>" +
-        '<div class="deadline">截止：' +
-        escapeHtml(p.deadline || "未定") +
-        "</div>" +
-        '<div class="progress-label">' +
-        (p.progress || 0) +
-        "% 完成</div>" +
-        (p.note ? '<div class="note">' + escapeHtml(p.note) + "</div>" : "") +
-        gh;
-      card.appendChild(fillBar);
-      body.appendChild(card);
-      col.appendChild(header);
-      col.appendChild(body);
-      root.appendChild(col);
+      colEl.appendChild(header);
+      colEl.appendChild(body);
+      root.appendChild(colEl);
     });
   }
 
-  function renderGantt(projects) {
-    const root = document.getElementById("gantt");
+  function renderGantt(board) {
+    var root = document.getElementById("gantt");
     if (!root) return;
-
-    const starts = [];
-    const ends = [];
-    projects.forEach(function (p) {
-      const s = parseDate(p.startDate) || parseDate("2026-01-01");
-      const e = parseDate(p.deadline) || parseDate("2026-12-31");
-      starts.push(s);
-      ends.push(e);
+    var cards = flattenCards(board).filter(function (c) {
+      return parseDate(c.startDate) || parseDate(c.deadline);
     });
-    const rangeStart = new Date(Math.min.apply(null, starts.map(Number)));
-    const rangeEnd = new Date(Math.max.apply(null, ends.map(Number)));
-    const totalDays = Math.max(1, daysBetween(rangeStart, rangeEnd));
-    const today = new Date();
-    const todayPct = Math.max(
+    if (!cards.length) {
+      root.innerHTML =
+        '<div class="gantt-wrap"><p class="empty">暂无带日期的卡片可绘制甘特。</p></div>';
+      return;
+    }
+
+    var starts = [];
+    var ends = [];
+    cards.forEach(function (p) {
+      var s = parseDate(p.startDate);
+      var e = parseDate(p.deadline);
+      if (s) starts.push(s);
+      if (e) ends.push(e);
+      if (!s && e) starts.push(e);
+      if (!e && s) ends.push(s);
+    });
+    var rangeStart = new Date(Math.min.apply(null, starts.map(Number)));
+    var rangeEnd = new Date(Math.max.apply(null, ends.map(Number)));
+    var totalDays = Math.max(1, daysBetween(rangeStart, rangeEnd));
+    var today = new Date();
+    var todayPct = Math.max(
       0,
       Math.min(100, (daysBetween(rangeStart, today) / totalDays) * 100)
     );
 
-    let rows = "";
-    projects.forEach(function (p) {
-      const s = parseDate(p.startDate) || rangeStart;
-      const e = parseDate(p.deadline) || rangeEnd;
-      const left = Math.max(0, (daysBetween(rangeStart, s) / totalDays) * 100);
-      const width = Math.max(
-        1.5,
-        (daysBetween(s, e) / totalDays) * 100
-      );
-      const color = progressColorSoft(p.progress);
+    var rows = "";
+    cards.forEach(function (p) {
+      var s = parseDate(p.startDate) || rangeStart;
+      var e = parseDate(p.deadline) || rangeEnd;
+      var left = Math.max(0, (daysBetween(rangeStart, s) / totalDays) * 100);
+      var width = Math.max(1.5, (daysBetween(s, e) / totalDays) * 100);
+      var color = progressColorSoft(p.progress);
+      var label =
+        p.progress == null || p.progress === ""
+          ? p.status === "待核验"
+            ? "待核"
+            : "—"
+          : p.progress + "%";
       rows +=
         "<tr>" +
         '<td class="gantt-name" title="' +
@@ -291,17 +374,14 @@
         "%;background:" +
         color +
         '">' +
-        (p.progress || 0) +
-        "%</div>" +
-        "</div>" +
-        "</td>" +
-        "</tr>";
+        label +
+        "</div></div></td></tr>";
     });
 
     root.innerHTML =
       '<div class="gantt-wrap">' +
       '<table class="gantt-table">' +
-      "<thead><tr><th>项目</th><th>阶段</th><th>截止</th><th>时间线</th></tr></thead>" +
+      "<thead><tr><th>卡片</th><th>阶段</th><th>截止</th><th>时间线</th></tr></thead>" +
       "<tbody>" +
       rows +
       "</tbody></table>" +
@@ -311,83 +391,156 @@
       fmtDate(today) +
       "</span><span>" +
       fmtDate(rangeEnd) +
-      "</span></div>" +
-      "</div>";
+      "</span></div></div>";
+  }
+
+  function computableShortfall(loop) {
+    if (loop.balance != null && Number(loop.balance) < 0) {
+      return Math.abs(Number(loop.balance));
+    }
+    if (
+      loop.balance != null &&
+      loop.budget != null &&
+      !isNaN(Number(loop.balance)) &&
+      !isNaN(Number(loop.budget))
+    ) {
+      var gap = Number(loop.budget) - Number(loop.balance);
+      return gap > 0 ? gap : 0;
+    }
+    return null;
   }
 
   function renderMoney(money) {
-    const list = document.getElementById("money-list");
-    const totalEl = document.getElementById("money-total");
-    const shortEl = document.getElementById("shortfall-list");
-    if (!list || !totalEl) return;
+    if (!money || Array.isArray(money)) {
+      // legacy array — should not appear after rebuild
+      var list = document.getElementById("money-list");
+      if (list) list.innerHTML = '<p class="sidebar-hint">资金结构已升级，请刷新 board.json</p>';
+      return;
+    }
 
-    let totalBalance = 0;
-    let totalBudget = 0;
-    const shorts = [];
+    var totalEl = document.getElementById("money-total");
+    var cashEl = document.getElementById("money-cash");
+    var liabEl = document.getElementById("money-liabilities");
+    var list = document.getElementById("money-list");
+    var shortEl = document.getElementById("shortfall-list");
+    var infoEl = document.getElementById("money-info");
 
-    list.innerHTML = "";
-    (money || []).forEach(function (item) {
-      const balance = Number(item.balance) || 0;
-      const budget = Number(item.budget) || 0;
-      totalBalance += balance;
-      totalBudget += budget;
-      const short = isShort(item);
-      if (short) shorts.push(item);
-
-      const ratio =
-        budget > 0
-          ? Math.min(100, Math.max(0, (balance / budget) * 100))
-          : balance >= 0
-            ? 100
-            : 0;
-
-      const div = document.createElement("div");
-      div.className = "money-item" + (short ? " short" : "");
-      div.innerHTML =
-        '<div class="row">' +
-        '<span class="name">' +
-        escapeHtml(item.name) +
-        "</span>" +
-        '<span class="bal ' +
-        (balance < 0 ? "neg" : "ok") +
-        '">' +
-        formatCNY(balance) +
-        "</span>" +
-        "</div>" +
-        '<div class="money-bar"><div class="money-bar-fill ' +
-        (short ? "short" : "ok") +
-        '" style="width:' +
-        ratio +
-        '%"></div></div>' +
-        '<div class="meta">预算 ' +
-        formatCNY(budget) +
-        (short
-          ? " · <span style=\"color:var(--danger)\">缺口 " +
-            formatCNY(shortfallAmount(item)) +
-            "</span>"
-          : " · 余量充足") +
-        "</div>" +
-        (item.note
-          ? '<div class="meta">' + escapeHtml(item.note) + "</div>"
-          : "");
-      list.appendChild(div);
+    var cash = money.cashOnHand && money.cashOnHand.amount;
+    var liabs = money.liabilities || [];
+    var liabSum = 0;
+    var knownLiab = 0;
+    liabs.forEach(function (l) {
+      if (l.amount != null && !isNaN(Number(l.amount))) {
+        liabSum += Number(l.amount);
+        knownLiab++;
+      }
     });
 
-    totalEl.innerHTML =
-      '<div class="label">合计余额（示例）</div>' +
-      '<div class="amount">' +
-      formatCNY(totalBalance) +
-      "</div>" +
-      '<div class="sub">总预算 ' +
-      formatCNY(totalBudget) +
-      " · 总缺口 " +
-      formatCNY(Math.max(0, totalBudget - totalBalance)) +
-      "</div>";
+    if (totalEl) {
+      totalEl.innerHTML =
+        '<div class="label">手头可用现金（' +
+        escapeHtml(money.asOf || "—") +
+        "）</div>" +
+        '<div class="amount">' +
+        formatCNY(cash) +
+        "</div>" +
+        '<div class="sub">' +
+        escapeHtml((money.cashOnHand && money.cashOnHand.note) || "") +
+        "</div>" +
+        '<div class="sub">已知负债本金合计 ' +
+        formatCNY(knownLiab ? liabSum : null) +
+        "（" +
+        knownLiab +
+        " 项快照）</div>";
+    }
+
+    if (cashEl) {
+      var hist = (money.historicalCash || [])
+        .map(function (h) {
+          return (
+            '<div class="meta">历史 ' +
+            escapeHtml(h.asOf) +
+            " ≈ " +
+            formatCNY(h.amount) +
+            " — " +
+            escapeHtml(h.note || "") +
+            "</div>"
+          );
+        })
+        .join("");
+      cashEl.innerHTML = hist
+        ? '<div class="money-item"><div class="name">历史现金快照</div>' + hist + "</div>"
+        : "";
+    }
+
+    if (liabEl) {
+      liabEl.innerHTML = "";
+      var title = document.createElement("div");
+      title.className = "section-title-sm";
+      title.textContent = "负债快照";
+      liabEl.appendChild(title);
+      liabs.forEach(function (l) {
+        var div = document.createElement("div");
+        div.className = "money-item";
+        div.innerHTML =
+          '<div class="row"><span class="name">' +
+          escapeHtml(l.name) +
+          '</span><span class="bal neg">' +
+          formatCNY(l.amount) +
+          "</span></div>" +
+          '<div class="meta">截至 ' +
+          escapeHtml(l.asOf || "—") +
+          (l.note ? " · " + escapeHtml(l.note) : "") +
+          "</div>";
+        liabEl.appendChild(div);
+      });
+    }
+
+    if (list) {
+      list.innerHTML = "";
+      (money.loops || []).forEach(function (item) {
+        var balNull = item.balance == null;
+        var budNull = item.budget == null;
+        var shortAmt = computableShortfall(item);
+        var div = document.createElement("div");
+        div.className =
+          "money-item" + (shortAmt != null && shortAmt > 0 ? " short" : "");
+        div.innerHTML =
+          '<div class="row"><span class="name">' +
+          escapeHtml(item.name) +
+          '</span><span class="bal ' +
+          (balNull ? "pending" : Number(item.balance) < 0 ? "neg" : "ok") +
+          '">' +
+          (balNull ? "待核验" : formatCNY(item.balance)) +
+          "</span></div>" +
+          '<div class="meta">预算 ' +
+          (budNull ? "待核验" : formatCNY(item.budget)) +
+          (item.status ? " · " + escapeHtml(item.status) : "") +
+          (shortAmt != null && shortAmt > 0
+            ? ' · <span style="color:var(--danger)">缺口 ' + formatCNY(shortAmt) + "</span>"
+            : "") +
+          "</div>" +
+          (item.note ? '<div class="meta">' + escapeHtml(item.note) + "</div>" : "");
+        list.appendChild(div);
+      });
+    }
+
+    var shorts = [];
+    (money.shortfalls || []).forEach(function (s) {
+      shorts.push(s);
+    });
+    (money.loops || []).forEach(function (item) {
+      var amt = computableShortfall(item);
+      if (amt != null && amt > 0) {
+        shorts.push({ name: item.name, amount: amt });
+      }
+    });
 
     if (shortEl) {
-      if (shorts.length === 0) {
+      if (!shorts.length) {
         shortEl.innerHTML =
-          '<h3 style="color:var(--success)">暂无短缺项目</h3>';
+          '<h3 style="color:var(--success)">无可计算短缺</h3>' +
+          '<p class="meta">仅在余额与预算均为数字，或余额&lt;0 时计算；不发明缺口。</p>';
       } else {
         shortEl.innerHTML =
           "<h3>短缺一览（" +
@@ -398,8 +551,8 @@
               return (
                 "<li>" +
                 escapeHtml(s.name) +
-                " — 缺口 " +
-                formatCNY(shortfallAmount(s)) +
+                " — " +
+                formatCNY(s.amount != null ? s.amount : s.gap) +
                 "</li>"
               );
             })
@@ -407,34 +560,36 @@
           "</ul>";
       }
     }
-  }
 
-  function escapeHtml(str) {
-    return String(str == null ? "" : str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+    if (infoEl && money.upcomingObligationsNote) {
+      var n = money.upcomingObligationsNote;
+      infoEl.innerHTML =
+        '<div class="money-item info"><div class="name">' +
+        escapeHtml(n.label || "备注") +
+        "</div><div class="meta">截至 " +
+        escapeHtml(n.asOf || "") +
+        "</div><div class="meta">' +
+        escapeHtml(n.text || "") +
+        "</div></div>";
+    }
   }
 
   function renderAll(board) {
     renderHeader(board);
-    renderKanban(board.projects || []);
-    renderGantt(board.projects || []);
-    renderMoney(board.money || []);
+    renderKanban(board);
+    renderGantt(board);
+    renderMoney(board.money || {});
   }
 
   async function main() {
-    const status = document.getElementById("status");
+    var status = document.getElementById("status");
     try {
-      let board = await loadBoardJson();
+      var board = await loadBoardJson();
       renderAll(board);
       if (status) status.style.display = "none";
-
-      // Silent live enrich (China-friendly: fails quietly)
-      const enriched = await tryLiveGithub(board);
+      var enriched = await tryLiveGithub(board);
       if (enriched !== board && enriched._liveSource) {
-        renderAll(enriched);
+        renderHeader(enriched);
       }
     } catch (err) {
       if (status) {
