@@ -2,7 +2,7 @@
 /**
  * sync-from-github.mjs
  * Refresh GitHub meta on data/board.json.
- * PRESERVES: money, columns/cards (progress/stage/deadline/invested/nextAction/bizStatus),
+ * PRESERVES: columns/cards (progress/stage/deadline/invested/nextAction/bizStatus),
  * scheduleOwner, taxonomyNote, activeSources.
  * Only refreshes githubMeta + per-card github stats.
  */
@@ -157,7 +157,7 @@ async function syncRepo(repo, token, cardsCfg) {
 
 async function main() {
   const config = loadJson(CONFIG_PATH, {});
-  const board = loadJson(BOARD_PATH, { columns: [], money: {}, sourceRepos: [] });
+  const board = loadJson(BOARD_PATH, { columns: [], sourceRepos: [] });
   const token = getToken();
   if (!token) console.warn("No token; timestamp-only update.");
 
@@ -193,6 +193,7 @@ async function main() {
       cards: (col.cards || []).map(function (card) {
         const stats = perCard[card.id] || card.github || {};
         return Object.assign({}, card, {
+          invested: null,
           github: {
             openIssues: stats.openIssues != null ? stats.openIssues : (card.github && card.github.openIssues) || 0,
             closedIssues:
@@ -210,7 +211,6 @@ async function main() {
     source: token ? "sync" : board.source || "vault",
     sourceRepos: repos,
     columns,
-    money: board.money, // never invent
     scheduleOwner: board.scheduleOwner || config.scheduleOwner,
     taxonomyNote: board.taxonomyNote,
     activeSources: board.activeSources,
@@ -229,6 +229,7 @@ async function main() {
   });
   // drop legacy flat projects if present
   delete out.projects;
+  delete out.money;
 
   writeFileSync(BOARD_PATH, JSON.stringify(out, null, 2) + "\n", "utf8");
   console.log("Wrote " + BOARD_PATH);

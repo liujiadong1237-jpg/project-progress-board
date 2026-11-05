@@ -228,7 +228,7 @@
   function renderHeader(board) {
     var el = document.getElementById("header-meta");
     if (!el) return;
-    var asOf = board.asOf || (board.money && board.money.asOf) || "—";
+    var asOf = board.asOf || "—";
     var sync = board.githubMeta && board.githubMeta.lastSync
       ? toCST(board.githubMeta.lastSync)
       : toCST(board.updatedAt);
@@ -258,8 +258,7 @@
       '<span class="badge">源：' +
       escapeHtml(repos) +
       "</span>" +
-      schedBadge +
-      '<span class="badge ok">金库事实 · 无示例数据</span>';
+      schedBadge;
     el.innerHTML = html;
   }
 
@@ -489,191 +488,10 @@
       "</span></div></div>";
   }
 
-  function computableShortfall(loop) {
-    if (loop.balance != null && Number(loop.balance) < 0) {
-      return Math.abs(Number(loop.balance));
-    }
-    if (
-      loop.balance != null &&
-      loop.budget != null &&
-      !isNaN(Number(loop.balance)) &&
-      !isNaN(Number(loop.budget))
-    ) {
-      var gap = Number(loop.budget) - Number(loop.balance);
-      return gap > 0 ? gap : 0;
-    }
-    return null;
-  }
-
-  function renderMoney(money) {
-    if (!money || Array.isArray(money)) {
-      // legacy array — should not appear after rebuild
-      var list = document.getElementById("money-list");
-      if (list) list.innerHTML = '<p class="sidebar-hint">资金结构已升级，请刷新 board.json</p>';
-      return;
-    }
-
-    var totalEl = document.getElementById("money-total");
-    var cashEl = document.getElementById("money-cash");
-    var liabEl = document.getElementById("money-liabilities");
-    var list = document.getElementById("money-list");
-    var shortEl = document.getElementById("shortfall-list");
-    var infoEl = document.getElementById("money-info");
-
-    var cash = money.cashOnHand && money.cashOnHand.amount;
-    var liabs = money.liabilities || [];
-    var liabSum = 0;
-    var knownLiab = 0;
-    liabs.forEach(function (l) {
-      if (l.amount != null && !isNaN(Number(l.amount))) {
-        liabSum += Number(l.amount);
-        knownLiab++;
-      }
-    });
-
-    if (totalEl) {
-      totalEl.innerHTML =
-        '<div class="label">手头可用现金（' +
-        escapeHtml(money.asOf || "—") +
-        "）</div>" +
-        '<div class="amount">' +
-        formatCNY(cash) +
-        "</div>" +
-        '<div class="sub">' +
-        escapeHtml((money.cashOnHand && money.cashOnHand.note) || "") +
-        "</div>" +
-        '<div class="sub">已知负债本金合计 ' +
-        formatCNY(knownLiab ? liabSum : null) +
-        "（" +
-        knownLiab +
-        " 项快照）</div>";
-    }
-
-    if (cashEl) {
-      var hist = (money.historicalCash || [])
-        .map(function (h) {
-          return (
-            '<div class="meta">历史 ' +
-            escapeHtml(h.asOf) +
-            " ≈ " +
-            formatCNY(h.amount) +
-            " — " +
-            escapeHtml(h.note || "") +
-            "</div>"
-          );
-        })
-        .join("");
-      cashEl.innerHTML = hist
-        ? '<div class="money-item"><div class="name">历史现金快照</div>' + hist + "</div>"
-        : "";
-    }
-
-    if (liabEl) {
-      liabEl.innerHTML = "";
-      var title = document.createElement("div");
-      title.className = "section-title-sm";
-      title.textContent = "负债快照";
-      liabEl.appendChild(title);
-      liabs.forEach(function (l) {
-        var div = document.createElement("div");
-        div.className = "money-item";
-        div.innerHTML =
-          '<div class="row"><span class="name">' +
-          escapeHtml(l.name) +
-          '</span><span class="bal neg">' +
-          formatCNY(l.amount) +
-          "</span></div>" +
-          '<div class="meta">截至 ' +
-          escapeHtml(l.asOf || "—") +
-          (l.note ? " · " + escapeHtml(l.note) : "") +
-          "</div>";
-        liabEl.appendChild(div);
-      });
-    }
-
-    if (list) {
-      list.innerHTML = "";
-      (money.loops || []).forEach(function (item) {
-        var balNull = item.balance == null;
-        var budNull = item.budget == null;
-        var shortAmt = computableShortfall(item);
-        var div = document.createElement("div");
-        div.className =
-          "money-item" + (shortAmt != null && shortAmt > 0 ? " short" : "");
-        div.innerHTML =
-          '<div class="row"><span class="name">' +
-          escapeHtml(item.name) +
-          '</span><span class="bal ' +
-          (balNull ? "pending" : Number(item.balance) < 0 ? "neg" : "ok") +
-          '">' +
-          (balNull ? "待核验" : formatCNY(item.balance)) +
-          "</span></div>" +
-          '<div class="meta">预算 ' +
-          (budNull ? "待核验" : formatCNY(item.budget)) +
-          (item.status ? " · " + escapeHtml(item.status) : "") +
-          (shortAmt != null && shortAmt > 0
-            ? ' · <span style="color:var(--danger)">缺口 ' + formatCNY(shortAmt) + "</span>"
-            : "") +
-          "</div>" +
-          (item.note ? '<div class="meta">' + escapeHtml(item.note) + "</div>" : "");
-        list.appendChild(div);
-      });
-    }
-
-    var shorts = [];
-    (money.shortfalls || []).forEach(function (s) {
-      shorts.push(s);
-    });
-    (money.loops || []).forEach(function (item) {
-      var amt = computableShortfall(item);
-      if (amt != null && amt > 0) {
-        shorts.push({ name: item.name, amount: amt });
-      }
-    });
-
-    if (shortEl) {
-      if (!shorts.length) {
-        shortEl.innerHTML =
-          '<h3 style="color:var(--success)">无可计算短缺</h3>' +
-          '<p class="meta">仅在余额与预算均为数字，或余额&lt;0 时计算；不发明缺口。</p>';
-      } else {
-        shortEl.innerHTML =
-          "<h3>短缺一览（" +
-          shorts.length +
-          "）</h3><ul>" +
-          shorts
-            .map(function (s) {
-              return (
-                "<li>" +
-                escapeHtml(s.name) +
-                " — " +
-                formatCNY(s.amount != null ? s.amount : s.gap) +
-                "</li>"
-              );
-            })
-            .join("") +
-          "</ul>";
-      }
-    }
-
-    if (infoEl && money.upcomingObligationsNote) {
-      var n = money.upcomingObligationsNote;
-      infoEl.innerHTML =
-        '<div class="money-item info"><div class="name">' +
-        escapeHtml(n.label || "备注") +
-        '</div><div class="meta">截至 ' +
-        escapeHtml(n.asOf || "") +
-        '</div><div class="meta">' +
-        escapeHtml(n.text || "") +
-        "</div></div>";
-    }
-  }
-
   function renderAll(board) {
     renderHeader(board);
     renderKanban(board);
     renderGantt(board);
-    renderMoney(board.money || {});
   }
 
   async function main() {

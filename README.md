@@ -1,6 +1,6 @@
 # 项目进度看板 · project-progress-board
 
-可视化**闭环看板**：列 = 闭环；卡 = **投入 / 进度 / 下一步**；右侧为金库事实资金侧栏。  
+可视化**闭环看板**：列 = 闭环；卡 = **投入 / 进度 / 下一步**。
 纯静态 GitHub Pages，零外部 CDN / 无 Google Fonts，适合中国大陆直接打开。
 
 ## 链接
@@ -10,11 +10,9 @@
 | 仓库 | https://github.com/liujiadong1237-jpg/project-progress-board |
 | GitHub Pages | https://liujiadong1237-jpg.github.io/project-progress-board/ |
 
-## 真实数据政策（重要）
+## 公开数据范围
 
-- **禁止**示例数据 / EXAMPLE / demo / 虚构余额（含旧 `-500`）。
-- 资金数字**只**来自主库可核验事实；未知写 `null` + `status: "待核验"`，UI 显示「待核验 / 暂无」，**不**用 ¥0 假装真实。
-- 分闭环余额几乎全部待核验；短缺只在余额与预算均为数字（或余额 &lt; 0）时计算。
+看板展示项目阶段、进度和下一步。现金、负债、收支和项目投入金额只在私有主库维护。
 
 ## 分类（八大总项目不变）
 
@@ -59,7 +57,7 @@
 node scripts/sync-from-github.mjs
 ```
 
-脚本只刷新 GitHub meta（issues/commits/branches），**保留** money、进度、阶段、截止、投入、下一步与排程字段。
+脚本只刷新 GitHub meta（issues/commits/branches），**保留** 进度、阶段、截止、下一步与排程字段。
 
 ## 目录
 
